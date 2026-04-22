@@ -13,14 +13,14 @@ body {
     overflow-x: hidden;
 }
 
-/* FULLSCREEN BACKGROUND */
+/* Background */
 .bg {
     position: fixed;
     width: 100%;
     height: 100%;
     background-size: cover;
     background-position: center;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 1.5s;
     z-index: -2;
 }
 
@@ -43,39 +43,40 @@ h1 {
     color: #ffd700;
 }
 
-.tap-msg {
-    font-size: 0.9rem;
-    color: #ccc;
-}
-
-#message {
-    margin-top: 20px;
-    font-size: 1.3rem;
-}
-
 #message p {
     margin: 8px 0;
     opacity: 0;
-    animation: fadeLine 1s forwards;
+    animation: fadeIn 1s forwards;
 }
 
-@keyframes fadeLine {
+@keyframes fadeIn {
     to { opacity: 1; }
 }
 
 /* Buttons */
-.actions {
-    margin-top: 30px;
-}
-
 .actions button {
     margin: 8px;
     padding: 10px 18px;
     border-radius: 25px;
     border: none;
-    background: linear-gradient(45deg, #ffd700, #ffb300);
-    color: black;
+    background: #ffd700;
     cursor: pointer;
+}
+
+/* Start Button */
+#startBtn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    background: #ffd700;
+    color: black;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 10;
 }
 
 /* Hearts */
@@ -86,7 +87,6 @@ h1 {
 }
 
 @keyframes floatUp {
-    from { transform: translateY(0); }
     to { transform: translateY(-110vh); opacity: 0; }
 }
 </style>
@@ -94,15 +94,12 @@ h1 {
 
 <body>
 
-<!-- Background layers -->
 <div id="bg1" class="bg"></div>
 <div id="bg2" class="bg"></div>
 <div class="overlay"></div>
 
 <div class="container">
     <h1>Hey Kadu ❤️</h1>
-    <p class="tap-msg">Tap anywhere to start 💛</p>
-
     <div id="message"></div>
 
     <div class="actions">
@@ -112,8 +109,10 @@ h1 {
     </div>
 </div>
 
-<audio id="bgMusic" loop>
-    <source src="music.mpeg">
+<button id="startBtn" onclick="startExperience()">▶️ Start</button>
+
+<audio id="bgMusic" loop preload="auto">
+    <source src="music.mpeg" type="audio/mpeg">
 </audio>
 
 <script>
@@ -147,7 +146,7 @@ const lines = [
 
 let delay = 0;
 
-/* BACKGROUND IMAGES */
+/* BACKGROUND IMAGES (UPDATED) */
 const backgrounds = [
 "img1.jpeg",
 "img2.jpeg",
@@ -159,32 +158,30 @@ let currentBg = 1;
 
 function changeBackground() {
     let next = currentBg === 1 ? 2 : 1;
-    document.getElementById("bg" + next).style.backgroundImage = `url(${backgrounds[bgIndex]})`;
-    document.getElementById("bg" + next).style.opacity = 1;
-    document.getElementById("bg" + currentBg).style.opacity = 0;
+    document.getElementById("bg"+next).style.backgroundImage = `url(${backgrounds[bgIndex]})`;
+    document.getElementById("bg"+next).style.opacity = 1;
+    document.getElementById("bg"+currentBg).style.opacity = 0;
 
     currentBg = next;
     bgIndex = (bgIndex + 1) % backgrounds.length;
 }
 
-/* Show lines */
 function showLines() {
     const msg = document.getElementById("message");
 
-    lines.forEach((line, i) => {
+    lines.forEach((line,i) => {
         setTimeout(() => {
             let p = document.createElement("p");
             p.innerText = line;
 
-            if (line === "You.") {
-                p.style.fontSize = "1.6rem";
+            if(line === "You.") {
                 p.style.color = "#ffd700";
+                p.style.fontSize = "1.6rem";
             }
 
             msg.appendChild(p);
 
-            /* Change background every few lines */
-            if (i % 6 === 0) changeBackground();
+            if(i % 6 === 0) changeBackground();
 
         }, delay);
 
@@ -194,54 +191,48 @@ function showLines() {
 
 /* Hearts */
 function startHearts() {
-    setInterval(() => {
-        let heart = document.createElement("div");
-        heart.innerHTML = "💛";
-        heart.className = "heart";
-        heart.style.left = Math.random() * 100 + "vw";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 5000);
-    }, 300);
+    setInterval(()=>{
+        let h=document.createElement("div");
+        h.innerHTML="💛";
+        h.className="heart";
+        h.style.left=Math.random()*100+"vw";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),5000);
+    },300);
 }
 
 /* Audio */
-let started = false;
-function startAudioOnce() {
-    if (!started) {
-        document.getElementById("bgMusic").play();
-        started = true;
-    }
+function startExperience(){
+    document.getElementById("bgMusic").play();
+    document.getElementById("startBtn").style.display="none";
 }
 
-function toggleAudio() {
-    const music = document.getElementById("bgMusic");
-    music.paused ? music.play() : music.pause();
+function toggleAudio(){
+    let m=document.getElementById("bgMusic");
+    m.paused ? m.play() : m.pause();
 }
 
 /* Restart */
-function restartMessage() {
-    document.getElementById("message").innerHTML = "";
-    delay = 0;
+function restartMessage(){
+    document.getElementById("message").innerHTML="";
+    delay=0;
     showLines();
 }
 
 /* Love burst */
-function loveBurst() {
-    for (let i = 0; i < 20; i++) {
-        let heart = document.createElement("div");
-        heart.innerHTML = "💛";
-        heart.className = "heart";
-        heart.style.left = (window.innerWidth/2 + (Math.random()*100-50)) + "px";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 1000);
+function loveBurst(){
+    for(let i=0;i<20;i++){
+        let h=document.createElement("div");
+        h.innerHTML="💛";
+        h.className="heart";
+        h.style.left=(window.innerWidth/2+(Math.random()*100-50))+"px";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),1000);
     }
 }
 
-document.addEventListener("click", startAudioOnce);
-document.addEventListener("touchstart", startAudioOnce);
-
 /* Start */
-window.onload = function() {
+window.onload=function(){
     changeBackground();
     showLines();
     startHearts();
