@@ -8,9 +8,8 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    color: #f5e6c8;
-    text-align: center;
-    overflow-x: hidden;
+    overflow: hidden;
+    color: white;
 }
 
 /* Background */
@@ -20,54 +19,34 @@ body {
     height: 100%;
     background-size: cover;
     background-position: center;
+    filter: blur(4px) brightness(0.6);
     transition: opacity 1.5s;
     z-index: -2;
 }
 
-.overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: -1;
-}
-
-/* Content */
-.container {
-    margin-top: 60px;
+/* Center screen text */
+.center-box {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     padding: 20px;
-}
-
-h1 {
-    font-size: 2.5rem;
-    color: #ffd700;
 }
 
 /* Message */
 #message {
-    font-size: 1.2rem;
-    max-width: 70%;
-    margin: auto;
-}
-
-#message p {
-    margin: 8px 0;
+    font-size: clamp(22px, 6vw, 42px);
+    line-height: 1.6;
+    max-width: 90%;
     opacity: 0;
-    animation: fadeIn 1s forwards;
+    transition: opacity 1s;
 }
 
-@keyframes fadeIn {
-    to { opacity: 1; }
-}
-
-/* Buttons */
-.actions button {
-    margin: 8px;
-    padding: 10px 18px;
-    border-radius: 25px;
-    border: none;
-    background: #ffd700;
-    cursor: pointer;
+/* Highlight line */
+.highlight {
+    color: #ffd700;
+    font-size: clamp(28px, 7vw, 50px);
 }
 
 /* Start Button */
@@ -76,12 +55,12 @@ h1 {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 12px 20px;
-    border-radius: 25px;
+    padding: 14px 24px;
+    border-radius: 30px;
     border: none;
     background: #ffd700;
     color: black;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
     z-index: 10;
 }
@@ -96,34 +75,6 @@ h1 {
 @keyframes floatUp {
     to { transform: translateY(-110vh); opacity: 0; }
 }
-
-/* 📱 MOBILE OPTIMIZATION */
-@media (max-width: 768px) {
-
-    .container {
-        margin-top: 30px;
-        padding: 20px 15px;
-    }
-
-    h1 {
-        font-size: 2.2rem;
-    }
-
-    #message {
-        font-size: 1.6rem;
-        line-height: 1.6;
-        max-width: 90%;
-    }
-
-    #message p {
-        margin: 14px 0;
-    }
-
-    .actions button {
-        font-size: 1rem;
-        padding: 12px 20px;
-    }
-}
 </style>
 </head>
 
@@ -131,93 +82,75 @@ h1 {
 
 <div id="bg1" class="bg"></div>
 <div id="bg2" class="bg"></div>
-<div class="overlay"></div>
 
-<div class="container">
-    <h1>Hey Kadu ❤️</h1>
-
+<div class="center-box">
     <div id="message"></div>
-
-    <div class="actions">
-        <button onclick="toggleAudio()">🎵 Play / Pause</button>
-        <button onclick="restartMessage()">💬 Read Again</button>
-        <button onclick="loveBurst()">❤️ I Love You</button>
-    </div>
 </div>
 
 <button id="startBtn" onclick="startExperience()">▶️ Start</button>
 
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" loop>
     <source src="music.mpeg" type="audio/mpeg">
 </audio>
 
 <script>
 const lines = [
 "I know sometimes it feels like my love is becoming less...",
-"",
 "But honestly, it's just life getting a little messy, not my heart.",
-"",
 "My love for you is still the same… actually more ❤️",
-"",
-"Like Krishna and Radha…",
-"love is not always loud,",
-"sometimes it's silent, deep, and always there.",
-"",
-"Yes, I get lazy sometimes 😅",
-"Yes, I don’t always express perfectly…",
-"",
-"But one thing never changes —",
+"Like Krishna and Radha… love is not always loud, sometimes it's silent, deep, and always there.",
+"Yes, I get lazy sometimes 😅 but one thing never changes —",
 "You.",
-"",
-"I may not always get it right,",
-"but I’m trying—and I really don’t want to lose you.",
-"",
-"I will understand you better,",
-"and make you smile everyday 💖",
-"",
-"And one truth…",
-"Even when I delay things 😄",
-"I never delay loving you ❤️"
+"I may not always get it right, but I don’t want to lose you.",
+"I will understand you better, and make you smile everyday 💖",
+"And one truth… I never delay loving you ❤️"
 ];
 
-let delay = 0;
-
-/* Background images */
 const backgrounds = ["img1.jpeg","img2.jpeg","img3.jpeg"];
+
+let index = 0;
 let bgIndex = 0;
 let currentBg = 1;
 
+/* Change background */
 function changeBackground() {
     let next = currentBg === 1 ? 2 : 1;
-    document.getElementById("bg"+next).style.backgroundImage = `url(${backgrounds[bgIndex]})`;
+
+    document.getElementById("bg"+next).style.backgroundImage =
+        `url(${backgrounds[bgIndex]})`;
+
     document.getElementById("bg"+next).style.opacity = 1;
     document.getElementById("bg"+currentBg).style.opacity = 0;
+
     currentBg = next;
     bgIndex = (bgIndex + 1) % backgrounds.length;
 }
 
-/* Show lines */
-function showLines() {
+/* Show one line at center */
+function showNextLine() {
     const msg = document.getElementById("message");
 
-    lines.forEach((line,i) => {
-        setTimeout(() => {
-            let p = document.createElement("p");
-            p.innerText = line;
+    if (index >= lines.length) return;
 
-            if(line === "You.") {
-                p.style.fontSize = "1.8rem";
-                p.style.color = "#ffd700";
-            }
+    msg.style.opacity = 0;
 
-            msg.appendChild(p);
+    setTimeout(() => {
+        msg.innerText = lines[index];
 
-            if(i % 6 === 0) changeBackground();
+        if (lines[index] === "You.") {
+            msg.classList.add("highlight");
+        } else {
+            msg.classList.remove("highlight");
+        }
 
-        }, delay);
+        msg.style.opacity = 1;
 
-        delay += line === "" ? 400 : 1200;
-    });
+        changeBackground();
+
+        index++;
+        setTimeout(showNextLine, 3000);
+
+    }, 800);
 }
 
 /* Hearts */
@@ -232,42 +165,14 @@ function startHearts() {
     },300);
 }
 
-/* Audio */
-function startExperience(){
+/* Start */
+function startExperience() {
     document.getElementById("bgMusic").play();
-    document.getElementById("startBtn").style.display="none";
-}
-
-function toggleAudio(){
-    let m=document.getElementById("bgMusic");
-    m.paused ? m.play() : m.pause();
-}
-
-/* Restart */
-function restartMessage(){
-    document.getElementById("message").innerHTML="";
-    delay=0;
-    showLines();
-}
-
-/* Love burst */
-function loveBurst(){
-    for(let i=0;i<20;i++){
-        let h=document.createElement("div");
-        h.innerHTML="💛";
-        h.className="heart";
-        h.style.left=(window.innerWidth/2+(Math.random()*100-50))+"px";
-        document.body.appendChild(h);
-        setTimeout(()=>h.remove(),1000);
-    }
-}
-
-/* Start page */
-window.onload=function(){
+    document.getElementById("startBtn").style.display = "none";
     changeBackground();
-    showLines();
+    showNextLine();
     startHearts();
-};
+}
 </script>
 
 </body>
