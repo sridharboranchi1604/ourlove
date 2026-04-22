@@ -43,6 +43,13 @@ h1 {
     color: #ffd700;
 }
 
+/* Message */
+#message {
+    font-size: 1.2rem;
+    max-width: 70%;
+    margin: auto;
+}
+
 #message p {
     margin: 8px 0;
     opacity: 0;
@@ -89,6 +96,34 @@ h1 {
 @keyframes floatUp {
     to { transform: translateY(-110vh); opacity: 0; }
 }
+
+/* 📱 MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+
+    .container {
+        margin-top: 30px;
+        padding: 20px 15px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    #message {
+        font-size: 1.6rem;
+        line-height: 1.6;
+        max-width: 90%;
+    }
+
+    #message p {
+        margin: 14px 0;
+    }
+
+    .actions button {
+        font-size: 1rem;
+        padding: 12px 20px;
+    }
+}
 </style>
 </head>
 
@@ -100,6 +135,7 @@ h1 {
 
 <div class="container">
     <h1>Hey Kadu ❤️</h1>
+
     <div id="message"></div>
 
     <div class="actions">
@@ -146,13 +182,8 @@ const lines = [
 
 let delay = 0;
 
-/* BACKGROUND IMAGES (UPDATED) */
-const backgrounds = [
-"img1.jpeg",
-"img2.jpeg",
-"img3.jpeg"
-];
-
+/* Background images */
+const backgrounds = ["img1.jpeg","img2.jpeg","img3.jpeg"];
 let bgIndex = 0;
 let currentBg = 1;
 
@@ -161,11 +192,11 @@ function changeBackground() {
     document.getElementById("bg"+next).style.backgroundImage = `url(${backgrounds[bgIndex]})`;
     document.getElementById("bg"+next).style.opacity = 1;
     document.getElementById("bg"+currentBg).style.opacity = 0;
-
     currentBg = next;
     bgIndex = (bgIndex + 1) % backgrounds.length;
 }
 
+/* Show lines */
 function showLines() {
     const msg = document.getElementById("message");
 
@@ -175,8 +206,8 @@ function showLines() {
             p.innerText = line;
 
             if(line === "You.") {
+                p.style.fontSize = "1.8rem";
                 p.style.color = "#ffd700";
-                p.style.fontSize = "1.6rem";
             }
 
             msg.appendChild(p);
@@ -231,7 +262,7 @@ function loveBurst(){
     }
 }
 
-/* Start */
+/* Start page */
 window.onload=function(){
     changeBackground();
     showLines();
