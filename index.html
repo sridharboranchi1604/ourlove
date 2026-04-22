@@ -24,7 +24,7 @@ body {
     z-index: -2;
 }
 
-/* Center screen text */
+/* Center text */
 .center-box {
     height: 100vh;
     display: flex;
@@ -43,7 +43,6 @@ body {
     transition: opacity 1s;
 }
 
-/* Highlight line */
 .highlight {
     color: #ffd700;
     font-size: clamp(28px, 7vw, 50px);
@@ -90,7 +89,7 @@ body {
 <button id="startBtn" onclick="startExperience()">▶️ Start</button>
 
 <audio id="bgMusic" loop>
-    <source src="music.mpeg" type="audio/mpeg">
+    <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -106,13 +105,23 @@ const lines = [
 "And one truth… I never delay loving you ❤️"
 ];
 
-const backgrounds = ["img1.jpeg","img2.jpeg","img3.jpeg"];
+/* 8 BACKGROUND IMAGES */
+const backgrounds = [
+"img1.jpeg",
+"img2.jpeg",
+"img3.jpeg",
+"img4.jpeg",
+"img5.jpeg",
+"img6.jpeg",
+"img7.jpeg",
+"img8.jpeg"
+];
 
 let index = 0;
 let bgIndex = 0;
 let currentBg = 1;
 
-/* Change background */
+/* Background change */
 function changeBackground() {
     let next = currentBg === 1 ? 2 : 1;
 
@@ -126,11 +135,23 @@ function changeBackground() {
     bgIndex = (bgIndex + 1) % backgrounds.length;
 }
 
-/* Show one line at center */
+/* Show lines */
 function showNextLine() {
     const msg = document.getElementById("message");
 
-    if (index >= lines.length) return;
+    if (index >= lines.length) {
+        setTimeout(() => {
+            msg.style.opacity = 0;
+
+            setTimeout(() => {
+                msg.innerText = "I mean this, Kadambari… always ❤️";
+                msg.classList.add("highlight");
+                msg.style.opacity = 1;
+            }, 800);
+
+        }, 1500);
+        return;
+    }
 
     msg.style.opacity = 0;
 
@@ -148,7 +169,7 @@ function showNextLine() {
         changeBackground();
 
         index++;
-        setTimeout(showNextLine, 3000);
+        setTimeout(showNextLine, 4000);
 
     }, 800);
 }
