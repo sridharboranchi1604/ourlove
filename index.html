@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #2b0a3d, #000000);
+    color: #f5e6c8;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+.container {
+    margin-top: 60px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/* Message */
+#message {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #fff3d6;
+}
+
+#message p {
+    margin: 8px 0;
+    opacity: 0;
+    animation: fadeLine 1s forwards;
+}
+
+@keyframes fadeLine {
+    to { opacity: 1; }
+}
+
+/* Slideshow */
+.slideshow {
+    margin-top: 25px;
+    width: 260px;
+    height: 260px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.slideshow img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Buttons */
+.actions {
+    margin-top: 25px;
+}
+
+.actions button {
+    margin: 8px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    border: none;
+    background: linear-gradient(45deg, #ffd700, #ffb300);
+    color: black;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.actions button:hover {
+    transform: scale(1.1);
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    bottom: -10px;
+    animation: floatUp 5s linear infinite;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* Burst hearts */
+.burst {
+    position: fixed;
+    font-size: 20px;
+    animation: burstAnim 1s ease-out forwards;
+}
+
+@keyframes burstAnim {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Hey Kadu ❤️</h1>
+
+    <div id="message"></div>
+
+    <div class="slideshow">
+        <img id="slide" src="img1.jpeg">
+    </div>
+
+    <!-- Buttons -->
+    <div class="actions">
+        <button onclick="toggleAudio()">🎵 Play / Pause</button>
+        <button onclick="restartMessage()">💬 Read Again</button>
+        <button onclick="loveBurst()">❤️ I Love You</button>
+    </div>
+</div>
+
+<!-- 🎶 Music only -->
+<audio id="bgMusic" loop>
+    <source src="music.mpeg">
+</audio>
+
+<script>
+const lines = [
+"I know sometimes it feels like my love is becoming less...",
+"",
+"But honestly, it's just life getting a little messy, not my heart.",
+"",
+"My love for you is still the same… actually more ❤️",
+"",
+"Like Krishna and Radha…",
+"love is not always loud,",
+"sometimes it's silent, deep, and always there.",
+"",
+"Yes, I get lazy sometimes 😅",
+"Yes, I don’t always express perfectly…",
+"",
+"But one thing never changes —",
+"You.",
+"",
+"I may not always get it right,",
+"but I’m trying—and I really don’t want to lose you.",
+"",
+"I will understand you better,",
+"and make you smile everyday 💖",
+"",
+"And one truth…",
+"Even when I delay things 😄",
+"I never delay loving you ❤️"
+];
+
+let delay = 0;
+
+/* Show lines automatically */
+function showLines() {
+    const msg = document.getElementById("message");
+
+    lines.forEach((line) => {
+        setTimeout(() => {
+            let p = document.createElement("p");
+            p.innerText = line;
+
+            if (line === "You.") {
+                p.style.fontSize = "1.6rem";
+                p.style.fontWeight = "bold";
+                p.style.color = "#ffd700";
+            }
+
+            msg.appendChild(p);
+        }, delay);
+
+        delay += line === "" ? 400 : 1200;
+    });
+}
+
+/* Floating hearts */
+function startHearts() {
+    setInterval(() => {
+        let heart = document.createElement("div");
+        heart.innerHTML = "💛";
+        heart.className = "heart";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 5000);
+    }, 300);
+}
+
+/* Slideshow */
+let images = [
+    "img1.jpeg",
+    "img2.jpeg",
+    "img3.jpeg"
+];
+
+let imgIndex = 0;
+
+function startSlideshow() {
+    setInterval(() => {
+        imgIndex = (imgIndex + 1) % images.length;
+        document.getElementById("slide").src = images[imgIndex];
+    }, 2500);
+}
+
+/* Audio control */
+function toggleAudio() {
+    const music = document.getElementById("bgMusic");
+
+    if (music.paused) {
+        music.play();
+    } else {
+        music.pause();
+    }
+}
+
+/* Restart message */
+function restartMessage() {
+    document.getElementById("message").innerHTML = "";
+    delay = 0;
+    showLines();
+}
+
+/* Heart burst */
+function loveBurst() {
+    for (let i = 0; i < 20; i++) {
+        let heart = document.createElement("div");
+        heart.innerHTML = "💛";
+        heart.className = "burst";
+
+        heart.style.left = (window.innerWidth / 2 + (Math.random() * 100 - 50)) + "px";
+        heart.style.top = (window.innerHeight / 2) + "px";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 1000);
+    }
+}
+
+/* Start automatically */
+window.onload = function() {
+    showLines();
+    startHearts();
+    startSlideshow();
+};
+</script>
+
+</body>
+</html>
