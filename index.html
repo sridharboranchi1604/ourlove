@@ -21,7 +21,13 @@ body {
     background-position: center;
     filter: blur(4px) brightness(0.6);
     transition: opacity 1.5s;
+    animation: zoom 12s ease-in-out infinite;
     z-index: -2;
+}
+
+@keyframes zoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
 }
 
 /* Center text */
@@ -46,6 +52,7 @@ body {
 .highlight {
     color: #ffd700;
     font-size: clamp(28px, 7vw, 50px);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
 }
 
 /* Start Button */
@@ -105,16 +112,9 @@ const lines = [
 "And one truth… I never delay loving you ❤️"
 ];
 
-/* 8 BACKGROUND IMAGES */
 const backgrounds = [
-"img1.jpeg",
-"img2.jpeg",
-"img3.jpeg",
-"img4.jpeg",
-"img5.jpeg",
-"img6.jpeg",
-"img7.jpeg",
-"img8.jpeg"
+"img1.jpeg","img2.jpeg","img3.jpeg","img4.jpeg",
+"img5.jpeg","img6.jpeg","img7.jpeg","img8.jpeg"
 ];
 
 let index = 0;
@@ -186,10 +186,24 @@ function startHearts() {
     },300);
 }
 
-/* Start */
+/* Start with smooth audio fade */
 function startExperience() {
-    document.getElementById("bgMusic").play();
+    const music = document.getElementById("bgMusic");
+    music.volume = 0;
+    music.play();
+
+    let vol = 0;
+    let fade = setInterval(() => {
+        if (vol < 1) {
+            vol += 0.05;
+            music.volume = vol;
+        } else {
+            clearInterval(fade);
+        }
+    }, 200);
+
     document.getElementById("startBtn").style.display = "none";
+
     changeBackground();
     showNextLine();
     startHearts();
