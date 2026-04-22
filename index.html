@@ -8,35 +8,49 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #1a1a1a, #2b0a3d, #000000);
     color: #f5e6c8;
     text-align: center;
     overflow-x: hidden;
 }
 
+/* FULLSCREEN BACKGROUND */
+.bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 1.5s ease-in-out;
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: -1;
+}
+
+/* Content */
 .container {
     margin-top: 60px;
     padding: 20px;
-    backdrop-filter: blur(10px);
 }
 
 h1 {
     font-size: 2.5rem;
     color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-    animation: fadeIn 2s ease-in-out;
 }
 
-@keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
+.tap-msg {
+    font-size: 0.9rem;
+    color: #ccc;
 }
 
-/* Message */
 #message {
     margin-top: 20px;
-    font-size: 1.2rem;
-    color: #fff3d6;
+    font-size: 1.3rem;
 }
 
 #message p {
@@ -49,26 +63,9 @@ h1 {
     to { opacity: 1; }
 }
 
-/* Slideshow */
-.slideshow {
-    margin-top: 25px;
-    width: 260px;
-    height: 260px;
-    border-radius: 15px;
-    overflow: hidden;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.slideshow img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 /* Buttons */
 .actions {
-    margin-top: 25px;
+    margin-top: 30px;
 }
 
 .actions button {
@@ -78,17 +75,10 @@ h1 {
     border: none;
     background: linear-gradient(45deg, #ffd700, #ffb300);
     color: black;
-    font-size: 0.9rem;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.actions button:hover {
-    transform: scale(1.1);
-}
-
-/* Floating hearts */
+/* Hearts */
 .heart {
     position: fixed;
     bottom: -10px;
@@ -96,36 +86,25 @@ h1 {
 }
 
 @keyframes floatUp {
-    from { transform: translateY(0); opacity: 1; }
+    from { transform: translateY(0); }
     to { transform: translateY(-110vh); opacity: 0; }
-}
-
-/* Burst hearts */
-.burst {
-    position: fixed;
-    font-size: 20px;
-    animation: burstAnim 1s ease-out forwards;
-}
-
-@keyframes burstAnim {
-    0% { transform: scale(0.5); opacity: 1; }
-    100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
 
+<!-- Background layers -->
+<div id="bg1" class="bg"></div>
+<div id="bg2" class="bg"></div>
+<div class="overlay"></div>
+
 <div class="container">
     <h1>Hey Kadu ❤️</h1>
+    <p class="tap-msg">Tap anywhere to start 💛</p>
 
     <div id="message"></div>
 
-    <div class="slideshow">
-        <img id="slide" src="img1.jpeg">
-    </div>
-
-    <!-- Buttons -->
     <div class="actions">
         <button onclick="toggleAudio()">🎵 Play / Pause</button>
         <button onclick="restartMessage()">💬 Read Again</button>
@@ -133,7 +112,6 @@ h1 {
     </div>
 </div>
 
-<!-- 🎶 Music only -->
 <audio id="bgMusic" loop>
     <source src="music.mpeg">
 </audio>
@@ -169,98 +147,104 @@ const lines = [
 
 let delay = 0;
 
-/* Show lines automatically */
+/* BACKGROUND IMAGES */
+const backgrounds = [
+"img1.jpeg",
+"img2.jpeg",
+"img3.jpeg"
+];
+
+let bgIndex = 0;
+let currentBg = 1;
+
+function changeBackground() {
+    let next = currentBg === 1 ? 2 : 1;
+    document.getElementById("bg" + next).style.backgroundImage = `url(${backgrounds[bgIndex]})`;
+    document.getElementById("bg" + next).style.opacity = 1;
+    document.getElementById("bg" + currentBg).style.opacity = 0;
+
+    currentBg = next;
+    bgIndex = (bgIndex + 1) % backgrounds.length;
+}
+
+/* Show lines */
 function showLines() {
     const msg = document.getElementById("message");
 
-    lines.forEach((line) => {
+    lines.forEach((line, i) => {
         setTimeout(() => {
             let p = document.createElement("p");
             p.innerText = line;
 
             if (line === "You.") {
                 p.style.fontSize = "1.6rem";
-                p.style.fontWeight = "bold";
                 p.style.color = "#ffd700";
             }
 
             msg.appendChild(p);
+
+            /* Change background every few lines */
+            if (i % 6 === 0) changeBackground();
+
         }, delay);
 
         delay += line === "" ? 400 : 1200;
     });
 }
 
-/* Floating hearts */
+/* Hearts */
 function startHearts() {
     setInterval(() => {
         let heart = document.createElement("div");
         heart.innerHTML = "💛";
         heart.className = "heart";
         heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-
         document.body.appendChild(heart);
-
         setTimeout(() => heart.remove(), 5000);
     }, 300);
 }
 
-/* Slideshow */
-let images = [
-    "img1.jpeg",
-    "img2.jpeg",
-    "img3.jpeg"
-];
-
-let imgIndex = 0;
-
-function startSlideshow() {
-    setInterval(() => {
-        imgIndex = (imgIndex + 1) % images.length;
-        document.getElementById("slide").src = images[imgIndex];
-    }, 2500);
-}
-
-/* Audio control */
-function toggleAudio() {
-    const music = document.getElementById("bgMusic");
-
-    if (music.paused) {
-        music.play();
-    } else {
-        music.pause();
+/* Audio */
+let started = false;
+function startAudioOnce() {
+    if (!started) {
+        document.getElementById("bgMusic").play();
+        started = true;
     }
 }
 
-/* Restart message */
+function toggleAudio() {
+    const music = document.getElementById("bgMusic");
+    music.paused ? music.play() : music.pause();
+}
+
+/* Restart */
 function restartMessage() {
     document.getElementById("message").innerHTML = "";
     delay = 0;
     showLines();
 }
 
-/* Heart burst */
+/* Love burst */
 function loveBurst() {
     for (let i = 0; i < 20; i++) {
         let heart = document.createElement("div");
         heart.innerHTML = "💛";
-        heart.className = "burst";
-
-        heart.style.left = (window.innerWidth / 2 + (Math.random() * 100 - 50)) + "px";
-        heart.style.top = (window.innerHeight / 2) + "px";
-
+        heart.className = "heart";
+        heart.style.left = (window.innerWidth/2 + (Math.random()*100-50)) + "px";
         document.body.appendChild(heart);
-
         setTimeout(() => heart.remove(), 1000);
     }
 }
 
-/* Start automatically */
+document.addEventListener("click", startAudioOnce);
+document.addEventListener("touchstart", startAudioOnce);
+
+/* Start */
 window.onload = function() {
+    changeBackground();
     showLines();
     startHearts();
-    startSlideshow();
 };
 </script>
 
